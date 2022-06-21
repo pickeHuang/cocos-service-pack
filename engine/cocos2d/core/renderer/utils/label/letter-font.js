@@ -119,7 +119,8 @@ LetterTexture.prototype = {
         this._texture.handleLoadedTexture();
     },
 
-    destroy () {
+    destroy() {
+        this._texture._packable = false;
         this._texture.destroy();
         this._texture = null;
         Label._canvasPool.put(this._data);
