@@ -353,6 +353,34 @@ export default class TTFAssembler extends Assembler2D {
         return this.packDynamicAtlasAndCheckMaterial(comp, frame);
     }
 
+    packDynamicAtlasAndCheckMaterial(comp, frame) {
+        const allowDynamicAtlas = comp.allowDynamicAtlas;
+        if ((cc.sp.allowDynamicAtlas && allowDynamicAtlas === 0) || allowDynamicAtlas === 1) {
+            frame._texture._uuid = _fontDesc
+                + _overflow
+                + (_premultiply ? 'P' : 'NP')
+                + (_enableUnderline ? 'UL' : 'NUL')
+                + _string;
+
+            if (_outlineComp) {
+                frame._texture._uuid += _outlineComp.color.toHEX()
+                    + ','
+                    + _outlineComp.width
+                    + ',';
+            }
+
+            if (_shadowComp) {
+                frame._texture._uuid += _shadowComp.color.toHEX()
+                    + _shadowComp.offset.x
+                    + ','
+                    + _shadowComp.offset.y
+                    + ','
+                    + _shadowComp.blur;
+            }
+        }
+        return super.packDynamicAtlasAndCheckMaterial(comp, frame);
+    }
+
     _updateLabelDimensions () {
         _canvasSize.width = Math.min(_canvasSize.width, MAX_SIZE);
         _canvasSize.height = Math.min(_canvasSize.height, MAX_SIZE);
