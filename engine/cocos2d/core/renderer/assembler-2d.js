@@ -131,22 +131,13 @@ export default class Assembler2D extends Assembler {
         }
     }
 
-    packToDynamicAtlas (comp, frame) {
-        if (CC_TEST) return;
-        
-        if (!frame._original && dynamicAtlasManager && frame._texture.packable) {
-            let packedFrame = dynamicAtlasManager.insertSpriteFrame(frame);
-            if (packedFrame) {
-                frame._setDynamicAtlasFrame(packedFrame);
-            }
-        }
-        let material = comp._materials[0];
-        if (!material) return;
-        
-        if (material.getProperty('texture') !== frame._texture) {
-            // texture was packed to dynamic atlas, should update uvs
-            comp._vertsDirty = true;
-            comp._updateMaterial();
+    updateTexId(comp) {
+        const texId = comp._texId;
+        let texIdOffset = this.texIdOffset;
+        let floatsPerVert = this.floatsPerVert;
+        let verts = this._renderData.vDatas[0];
+        for (let i = 0, l = verts.length; i < l; i++) {
+            verts[floatsPerVert * i + texIdOffset] = texId;
         }
     }
 }
@@ -159,6 +150,8 @@ cc.js.addon(Assembler2D.prototype, {
 
     uvOffset: 2,
     colorOffset: 4,
+
+    isMulti: false,
 });
 
 cc.Assembler2D = Assembler2D;

@@ -28,6 +28,7 @@ const js = require('../platform/js');
 const macro = require('../platform/CCMacro');
 const textUtils = require('../utils/text-utils');
 const HtmlTextParser = require('../utils/html-text-parser');
+import MaterialVariant from '../assets/material/material-variant';
 const _htmlTextParser = new HtmlTextParser();
 
 const HorizontalAlign = macro.TextAlignment;
@@ -35,6 +36,8 @@ const VerticalAlign = macro.VerticalTextAlignment;
 const RichTextChildName = "RICHTEXT_CHILD";
 const RichTextChildImageName = "RICHTEXT_Image_CHILD";
 const CacheMode = cc.Label.CacheMode;
+
+const RenderComponent = require('./CCRenderComponent');
 
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
@@ -129,7 +132,7 @@ let RichText = cc.Class({
     editor: CC_EDITOR && {
         menu: 'i18n:MAIN_MENU.component.renderers/RichText',
         help: 'i18n:COMPONENT.help_url.richtext',
-        inspector: 'packages://inspector/inspectors/comps/richtext.js',
+        inspector: 'packages://service-pack/inspectors/comps/richtext.js',
         executeInEditMode: true
     },
 
@@ -344,6 +347,30 @@ let RichText = cc.Class({
                 if (this.handleTouchEvent === oldValue) return;
                 if (this.enabledInHierarchy) {
                     this.handleTouchEvent ? this._addEventListeners() : this._removeEventListeners();
+                }
+            }
+        },
+
+        autoSwitchMaterial: {
+            type: RenderComponent.EnableType,
+            default: RenderComponent.EnableType.GLOBAL,
+            notify: function (oldValue) {
+                if (this.autoSwitchMaterial === oldValue) return;
+                for (let i = 0; i < this._labelSegments.length; i++) {
+                    const labelComponent = this._labelSegments[i].getComponent(cc.Label);
+                    if (labelComponent) {
+                        labelComponent.autoSwitchMaterial = this.autoSwitchMaterial;
+                    }
+                    const spriteComponent = this._labelSegments[i].getComponent(cc.Sprite);
+                    if (spriteComponent) {
+                        spriteComponent.autoSwitchMaterial = this.autoSwitchMaterial;
+                    }
+                }
+                for (let i = 0; i < this._labelSegmentsCache.length; i++) {
+                    const labelComponent = this._labelSegmentsCache[i].getComponent(cc.Label);
+                    if (labelComponent) {
+                        labelComponent.autoSwitchMaterial = this.autoSwitchMaterial;
+                    }
                 }
             }
         }
@@ -656,6 +683,8 @@ let RichText = cc.Class({
         if (spriteFrame) {
             let spriteNode = new cc.PrivateNode(RichTextChildImageName);
             let spriteComponent = spriteNode.addComponent(cc.Sprite);
+
+            spriteComponent.autoSwitchMaterial = this.autoSwitchMaterial;
             switch (richTextElement.style.imageAlign)
             {
                 case 'top':
@@ -948,6 +977,7 @@ let RichText = cc.Class({
 
         labelComponent.cacheMode = this.cacheMode;
 
+        labelComponent.autoSwitchMaterial = this.autoSwitchMaterial;
         let isAsset = this.font instanceof cc.Font;
         if (isAsset && !this._isSystemFontUsed) {
             labelComponent.font = this.font;
