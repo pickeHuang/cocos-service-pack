@@ -702,7 +702,7 @@ sp.Skeleton = cc.Class({
 
         if (this.isAnimationCached()) {
 
-            this._assembler.handleDynamicAtlasAndSwitchMaterial(this);
+            if (this._assembler) this._assembler.handleDynamicAtlasAndSwitchMaterial(this);
 
             // Cache mode and has animation queue.
             if (this._isAniComplete) {
@@ -1088,7 +1088,7 @@ sp.Skeleton = cc.Class({
                 if (this.attachUtil._hasAttachedNode()) {
                     this._frameCache.enableCacheAttachedInfo();
                 }
-                this._assembler.handleDynamicAtlasAndSwitchMaterial(this);
+                if (this._assembler) this._assembler.handleDynamicAtlasAndSwitchMaterial(this);
                 this._frameCache.updateToFrame(0);
                 this._curFrame = this._frameCache.frames[0];
             }
