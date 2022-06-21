@@ -199,6 +199,15 @@ export default class SpineAssembler extends Assembler {
     updateRenderData (comp) {
         if (comp.isAnimationCached()) return;
 
+        this.handleDynamicAtlasAndSwitchMaterial(comp);
+
+        let skeleton = comp._skeleton;
+        if (skeleton) {
+            skeleton.updateWorldTransform();
+        }
+    }
+
+    handleDynamicAtlasAndSwitchMaterial(comp) {
         if (comp._dataDirty) {
             // 自动合图
             this.packDynamicAtlasForSpine(comp);
@@ -210,24 +219,19 @@ export default class SpineAssembler extends Assembler {
                 if (!material) return false;
 
                 const skins = comp.skeletonData._skeletonCache.skins;
-                for (const skin of skins) {
+                root: for (const skin of skins) {
                     for (const attachment of skin.attachments) {
                         for (const key in attachment) {
                             const region = attachment[key].region;
                             if (region && region.texture) {
                                 this.checkAndSwitchMaterial(comp, region.texture._texture, material);
-                                break;
+                                break root;
                             }
                         }
                     }
                 }
             }
             comp._dataDirty = false;
-        }
-
-        let skeleton = comp._skeleton;
-        if (skeleton) {
-            skeleton.updateWorldTransform();
         }
     }
 

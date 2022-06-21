@@ -464,8 +464,8 @@ sp.Skeleton = cc.Class({
     },
 
     setVertsDirty() {
-        this.invalidAnimationCache();
         this._dataDirty = true;
+        this.invalidAnimationCache();
         this._materialCache = {};
         this._super();
     },
@@ -701,6 +701,8 @@ sp.Skeleton = cc.Class({
         dt *= this.timeScale * sp.timeScale;
 
         if (this.isAnimationCached()) {
+
+            this._assembler.handleDynamicAtlasAndSwitchMaterial(this);
 
             // Cache mode and has animation queue.
             if (this._isAniComplete) {
@@ -1086,6 +1088,7 @@ sp.Skeleton = cc.Class({
                 if (this.attachUtil._hasAttachedNode()) {
                     this._frameCache.enableCacheAttachedInfo();
                 }
+                this._assembler.handleDynamicAtlasAndSwitchMaterial(this);
                 this._frameCache.updateToFrame(0);
                 this._curFrame = this._frameCache.frames[0];
             }
@@ -1379,7 +1382,9 @@ sp.Skeleton = cc.Class({
         }
     },
 
-    _updateSkeletonData () {
+    _updateSkeletonData() {
+        this._dataDirty = true;
+
         if (!this.skeletonData) {
             this.disableRender();
             return;
@@ -1406,7 +1411,6 @@ sp.Skeleton = cc.Class({
         this.attachUtil._associateAttachedNode();
         this._preCacheMode = this._cacheMode;
         this.animation = this.defaultAnimation;
-        this._dataDirty = true;
     },
 
     _refreshInspector () {
