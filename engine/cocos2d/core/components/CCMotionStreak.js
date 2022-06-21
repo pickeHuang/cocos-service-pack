@@ -242,6 +242,7 @@ var MotionStreak = cc.Class({
         if (this._assembler) {
             const material = this._materials[0];
             if (!material) return;
+            if (!this._texture) return;
             this._assembler.checkAndSwitchMaterial(this, this._texture, material);
         }
     },
@@ -257,6 +258,7 @@ var MotionStreak = cc.Class({
         // 根据材质更新 uniform
         const isMultiMaterial = material.material.isMultiSupport();
         if (isMultiMaterial) {
+            if (!this._texture) return;
             this._updateMultiTexId(material, this._texture);
         } else {
             if (material.getProperty('texture') !== this._texture) {
@@ -272,7 +274,8 @@ var MotionStreak = cc.Class({
         }
 
         // texId
-        if (isMultiMaterial && this._texIdDirty) {
+        if (isMultiMaterial && this._texIdDirty && this._assembler) {
+            if (!this._texture) return;
             this._assembler.updateTexId(this);
             this._texIdDirty = false;
         }
