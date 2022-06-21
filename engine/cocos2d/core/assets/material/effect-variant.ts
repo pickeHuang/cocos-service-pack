@@ -11,6 +11,7 @@ export default class EffectVariant extends EffectBase {
     _passes: Pass[] = [];
     _stagePasses = {};
     _hash = 0;
+    _effectDirtyCode = 0;
 
     get effect () {
         return this._effect;
@@ -66,15 +67,16 @@ export default class EffectVariant extends EffectBase {
 
     }
 
-    getHash () {
-        if (!this._dirty) return this._hash;
+    getHash() {
+        let effect = this._effect;
+        if (!this._dirty && (!effect || this._effectDirtyCode === effect._dirtyCode)) return this._hash;
         this._dirty = false;
 
         let hash = '';
         hash += utils.serializePasses(this._passes);
 
-        let effect = this._effect;
         if (effect) {
+            this._effectDirtyCode = effect._dirtyCode;
             hash += utils.serializePasses(effect.passes);
         }
 

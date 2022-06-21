@@ -4,6 +4,7 @@ const gfx = cc.gfx;
 
 export default class EffectBase {
     _dirty = true;
+    _dirtyCode = 0;
 
     _name = '';
     get name () {
@@ -54,6 +55,7 @@ export default class EffectBase {
         }
 
         this._dirty = true;
+        this._dirtyCode++;
         return Pass.prototype.setProperty.call(pass, name, value, directly);
     }
 
@@ -132,6 +134,7 @@ export default class EffectBase {
             passes[i].setCullMode(cullMode);
         }
         this._dirty = true;
+        this._dirtyCode++;
     }
 
     setDepth (depthTest, depthWrite, depthFunc, passIdx) {
@@ -144,6 +147,7 @@ export default class EffectBase {
             passes[i].setDepth(depthTest, depthWrite, depthFunc);
         }
         this._dirty = true;
+        this._dirtyCode++;
     }
 
     setBlend (enabled, blendEq, blendSrc, blendDst, blendAlphaEq, blendSrcAlpha, blendDstAlpha, blendColor, passIdx) {
@@ -162,6 +166,7 @@ export default class EffectBase {
             );
         }
         this._dirty = true;
+        this._dirtyCode++;
     }
 
     setStencilEnabled (stencilTest = gfx.STENCIL_INHERIT, passIdx) {
@@ -174,6 +179,7 @@ export default class EffectBase {
             passes[i].setStencilEnabled(stencilTest);
         }
         this._dirty = true;
+        this._dirtyCode++;
     }
 
     setStencil (enabled, stencilFunc, stencilRef, stencilMask, stencilFailOp, stencilZFailOp, stencilZPassOp, stencilWriteMask, passIdx) {
@@ -188,6 +194,7 @@ export default class EffectBase {
             pass.setStencilBack(enabled, stencilFunc, stencilRef, stencilMask, stencilFailOp, stencilZFailOp, stencilZPassOp, stencilWriteMask);
         }
         this._dirty = true;
+        this._dirtyCode++;
     }
 }
 
