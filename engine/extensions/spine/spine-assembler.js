@@ -248,11 +248,17 @@ export default class SpineAssembler extends Assembler {
             attachment.updateOffset();
         }
 
+        region._original._ref++;
+
         frame.once("_resetDynamicAtlasFrame", () => {
             region.x = region._original._x;
             region.y = region._original._y;
             region.texture = region._original._texture;
-            region._original = null;
+            region._original._ref--;
+
+            if (region._original._ref <= 0) {
+                region._original = null;
+            }
 
             // update uv
             sp.SkeletonData.updateRegionUV(region);
@@ -300,6 +306,7 @@ export default class SpineAssembler extends Assembler {
                                             _texture: region.texture,
                                             _x: region.x,
                                             _y: region.y,
+                                            _ref: 0,
                                         };
 
                                         region.texture = new sp.SkeletonTexture({
